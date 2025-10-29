@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+  <!--
+    NOTA: Maven NÃO interpolará "properties" custom dentro de <servers>.
+    A forma suportada para evitar repetição é usar variáveis de ambiente: ${env.VARIAVEL}.
+    Defina no CMD/PowerShell antes de rodar:
+      set ANYPOINT_CLIENT_ID=~~~Client~~~
+      set ANYPOINT_CLIENT_SECRET=4def50ccd56d4846819ed41699efc265~?~0fba4C70B7594C1d8C0F47D9711362A0
+  -->
+
+  <pluginGroups>
+    <pluginGroup>org.mule.tools</pluginGroup>
+  </pluginGroups>
+
+  <servers>
+    <!-- Nexus EE (releases-ee) -->
+    <server>
+      <id>MuleRepository</id>
+      <username>${env.MULE_REPO_EE_NEXUS_USERNAME}</username>
+      <password>${env.MULE_REPO_EE_NEXUS_PASSWORD}</password>
+    </server>
+
+    <!-- Anypoint Exchange (mesmas credenciais via env vars, sem repetir) -->
+    <server>
+      <id>anypoint-exchange-v1</id>
+      <username>${env.ANYPOINT_USERNAME}</username>
+      <password>${env.ANYPOINT_PASSWORD}</password>
+    </server>
+    <server>
+      <id>anypoint-exchange-v2</id>
+      <username>${env.ANYPOINT_USERNAME}</username>
+      <password>${env.ANYPOINT_PASSWORD}</password>
+    </server>
+    <server>
+      <id>anypoint-exchange-v3</id>
+      <username>${env.ANYPOINT_USERNAME}</username>
+      <password>${env.ANYPOINT_PASSWORD}</password>
+    </server>
+    <server>
+      <id>exchange-server</id>
+      <username>${env.ANYPOINT_USERNAME}</username>
+      <password>${env.ANYPOINT_PASSWORD}</password>
+    </server>
+    <server>
+      <id>Exchange2</id>
+      <username>${env.ANYPOINT_USERNAME}</username>
+      <password>${env.ANYPOINT_PASSWORD}</password>
+    </server>
+  </servers>
+
+  <profiles>
+    <profile>
+      <id>all-mule-repositories</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+
+      <repositories>
+        <!-- Central -->
+        <repository>
+          <id>central</id>
+          <name>Maven Central</name>
+          <url>https://repo1.maven.org/maven2/</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+
+        <!-- Mule EE (Nexus enterprise) -->
+        <repository>
+          <id>MuleRepository</id>
+          <name>Mule Enterprise Repository</name>
+          <url>https://repository.mulesoft.org/nexus-ee/content/repositories/releases-ee/</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+
+        <!-- MuleSoft Public / Archetypes -->
+        <repository>
+          <id>mulesoft-public</id>
+          <name>MuleSoft Public</name>
+          <url>https://repository.mulesoft.org/nexus/content/repositories/public</url>
+          <releases>
+            <enabled>true</enabled>
+            <checksumPolicy>fail</checksumPolicy>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <checksumPolicy>warn</checksumPolicy>
+          </snapshots>
+        </repository>
+      </repositories>
+
+      <pluginRepositories>
+        <pluginRepository>
+          <id>mule-plugins</id>
+          <name>MuleSoft Public Plugins</name>
+          <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </pluginRepository>
+        <pluginRepository>
+          <id>central-plugins</id>
+          <name>Maven Central Plugins</name>
+          <url>https://repo1.maven.org/maven2/</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>false</enabled></snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+  </profiles>
+
+  <activeProfiles>
+    <activeProfile>all-mule-repositories</activeProfile>
+  </activeProfiles>
+</settings>

@@ -1,0 +1,32 @@
+{
+  "configs": [
+    "template.xml"
+  ],
+  "secureProperties": [],
+  "supportedJavaVersions": [
+    "1.8",
+    "11",
+    "17"
+  ],
+  "redeploymentEnabled": true,
+  "name": "bda6429f-df0d-477d-80cb-e10089cffdee:mule-policy-test:1.0.0",
+  "minMuleVersion": "4.4.0",
+  "requiredProduct": "MULE_EE",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "exportedPackages": [],
+      "exportedResources": []
+    }
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {
+      "groupId": "bda6429f-df0d-477d-80cb-e10089cffdee",
+      "classifier": "mule-policy",
+      "artifactId": "mule-policy-test",
+      "type": "jar",
+      "version": "1.0.0"
+    }
+  }
+}

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- Identificação do projeto -->
+  <groupId>bda6429f-df0d-477d-80cb-e10089cffdee</groupId>
+  <artifactId>mule-policy-test</artifactId>
+  <version>1.0.0</version>
+  <packaging>mule-policy</packaging>
+  <name>Mule Policy Test</name>
+
+  <!-- Propriedades reutilizadas no projeto -->
+  <properties>
+    <mule.maven.plugin.version>3.2.1</mule.maven.plugin.version>
+    <httpPolicyTransformVersion>3.2.0</httpPolicyTransformVersion>
+  </properties>
+
+  <!-- 🧑‍💼 Informações do desenvolvedor -->
+  <developers>
+    <developer>
+      <id>leonel.d.porto</id>
+      <name>Leonel Dorneles Porto</name>
+      <email>leonel.d.porto@accenture.com</email>
+      <organization>Accenture</organization>
+      <organizationUrl>https://www.accenture.com</organizationUrl>
+      <properties>
+        <linkedin>https://br.linkedin.com/in/leonel-dorneles-porto-b88600122</linkedin>
+      </properties>
+    </developer>
+  </developers>
+
+  <!-- ⚙️ Plugins utilizados na build -->
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.mule.tools.maven</groupId>
+        <artifactId>mule-maven-plugin</artifactId>
+        <version>${mule.maven.plugin.version}</version>
+      </extension>
+    </extensions>
+
+    <plugins>
+      <!-- Plugin principal para build de aplicações Mule -->
+      <plugin>
+        <groupId>org.mule.tools.maven</groupId>
+        <artifactId>mule-maven-plugin</artifactId>
+      </plugin>
+
+      <!-- Plugin auxiliar para manipular paths, arquivos extras etc -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+      </plugin>
+
+      <!-- Plugin para realizar deploy da policy no Anypoint Exchange -->
+      <plugin>
+        <groupId>org.mule.tools.maven</groupId>
+        <artifactId>exchange-mule-maven-plugin</artifactId>
+        <version>0.0.23</version>
+        <executions>
+          <execution>
+            <id>deploy</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>exchange-deploy</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <!-- 📦 Dependências utilizadas pela policy -->
+  <dependencies>
+    <!-- HTTP Policy Transform Extension (sem incluir HTTP Connector do runtime) -->
+    <dependency>
+      <groupId>com.mulesoft.anypoint</groupId>
+      <artifactId>mule-http-policy-transform-extension</artifactId>
+      <version>${httpPolicyTransformVersion}</version>
+      <classifier>mule-plugin</classifier>
+      <exclusions>
+        <exclusion>
+          <groupId>org.mule.connectors</groupId>
+          <artifactId>mule-http-connector</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
+
+  <!-- 📥 Repositórios utilizados para baixar dependências -->
+  <repositories>
+    <repository>
+      <id>central</id>
+      <name>Maven Central</name>
+      <url>https://repo1.maven.org/maven2/</url>
+      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>false</enabled></snapshots>
+    </repository>
+
+    <!-- 🔐 IMPORTANTE: Repositório EE da MuleSoft -->
+    <!-- Para funcionar corretamente, adicione no seu ~/.m2/settings.xml:
+         <server>
+           <id>MuleRepository</id>
+           <username>SEU_USUARIO_NEXUS</username>
+           <password>SUA_SENHA_NEXUS</password>
+         </server>
+    -->
+    <repository>
+      <id>MuleRepository</id>
+      <name>Mule EE Repository</name>
+      <url>https://repository.mulesoft.org/nexus-ee/content/repositories/releases-ee/</url>
+      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>false</enabled></snapshots>
+    </repository>
+  </repositories>
+
+  <!-- 🚀 Publicação no Exchange -->
+  <distributionManagement>
+    <!-- 🔐 IMPORTANTE: Para deploy no Exchange, configure o settings.xml com o ID abaixo:
+         <server>
+           <id>anypoint-exchange-v1</id>
+           <username>SEU_CLIENT_ID</username>
+           <password>SEU_CLIENT_SECRET</password>
+         </server>
+    -->
+    <repository>
+      <id>anypoint-exchange-v1</id>
+      <name>Anypoint Exchange V1</name>
+      <url>https://maven.anypoint.mulesoft.com/api/v1/organizations/bda6429f-df0d-477d-80cb-e10089cffdee/maven</url>
+      <layout>default</layout>
+    </repository>
+  </distributionManagement>
+
+  <!-- 📦 Repositório de plugins Maven da MuleSoft -->
+  <pluginRepositories>
+    <pluginRepository>
+      <id>mule-plugin</id>
+      <name>Mule Plugin Repository</name>
+      <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+</project>

@@ -1,0 +1,636 @@
+id: Multi IdP JWT Validation
+name: Multi IdP JWT Validation
+description: |
+  🔐 **Multi-IdP JWT Validation Policy**
+
+  This policy validates JSON Web Tokens (JWTs) from multiple Identity Providers (IdPs). It provides robust and flexible security features including:
+  ✅ **JWKS URL Fallback:** Validates JWT against multiple JWKS endpoints in sequence.
+  ✅ **Flexible Claim Validation:** Supports verification of both header and payload claims with single or multiple expected values (comma-separated).
+  ✅ **Optional Checks:** Allows selective enforcement of JWT standard claims (`exp`, `nbf`, `jti`).
+
+  🛈 **Usage Guide:**
+  - Provide JWKS endpoints as a comma-separated list in `urlsCsv`.
+  - Add any standard or custom JWT claim directly as a parameter.
+  - 🔄 All **string-type** claims support multiple expected values using commas → `alg: RS256,RS512`, `sub: userA,userB`.
+  - Leave any field empty if that claim should not be enforced.
+
+category: Custom
+type: custom
+standalone: true
+supportedJavaVersions: ["8", "11", "17"]
+requiresConnectivity: true
+encryptionSupported: true
+resourceLevelSupported: true
+providedCharacteristics: []
+requiredCharacteristics: []
+
+configuration:
+
+- propertyName: documentation
+  name: 🔎 Usage & Behavior (Read-only Info)
+  description: |
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  
+  
+    🔐 **Multi-IdP JWT Validation Policy**
+    
+    This policy validates JWT tokens issued by **multiple Identity Providers** using a flexible fallback strategy.
+  
+    💡 **How It Works**
+    - Accepts a comma-separated list of JWKS URLs via `urlsCsv`, trying each in order until a valid key is found.
+    - Validates standard and custom claims from both JWT **header** (e.g., `alg`, `x5t`, `typ`, `kid`) and **payload** (e.g., `sub`, `iss`, `scope`, `vivo.env`, etc.).
+    - Each claim field supports **multiple expected values**, separated by commas → `RS256,RS512` or `userA,userB`.
+  
+    🧩 **What You Can Configure**
+    - 🔧 Enable or disable validation for `exp`, `nbf`, or `jti` (JWT core claims).
+    - 🔄 Skip or enforce client ID checks (`skipClientIdValidation`).
+    - 📋 Specify as many claim key/value pairs as needed.
+    - 🛡️ Block replay attacks with required `jti`.
+  
+    📝 **Examples**
+    - ✅ `alg: RS256,RS512` – accepts both algorithms.
+    - ✅ `iss: https://auth1.example.com,https://auth2.example.com`
+    - ✅ `scope: ServiceAccount.Profile,UserAccount.Profile`
+    - ✅ `sub: user1,user2,user3`
+  
+    📌 **Empty fields mean the claim will be skipped**, so only fill what’s needed.
+  
+    📥 **Ideal for:**
+    - B2B/B2C APIs that receive tokens from multiple trusted sources.
+    - Environments requiring conditional or fallback JWT verification.
+    - Enhancing security with multi-key validation paths.
+    
+    
+    🔚 End of Policy Description
+    
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  type: object
+  optional: true
+
+# ─────────────────────────────────────────────────────────────
+# 🗂️ Sistema (Radio Buttons)
+# ─────────────────────────────────────────────────────────────
+- propertyName: usingSystem
+  name: "🗂️ Sistema Utilizado"
+  description: |
+    Identifica **em qual sistema** esta policy está sendo usada.
+
+    💡 Os ícones ajudam a identificar rapidamente o contexto:
+    - "🐴 MULE" → APIs MuleSoft
+    - "🧬 SFA" → Salesforce Automation
+    - "🔗 KAFKA" → Event Streaming
+    - "📦 ROM" → Logística ROM
+    - ...
+
+    Use para rastreabilidade e padronização dos fluxos.
+  type: radio
+  options:
+    - name: "🐴 MULE"
+      value: "MULE"
+    - name: "🧬 SFA"
+      value: "SFA"
+    - name: "🚐 COM"
+      value: "COM"
+    - name: "🧫 SOM"
+      value: "SOM"
+    - name: "🧾 BRM"
+      value: "BRM"
+    - name: "🔗 KAFKA"
+      value: "KAFKA"
+    - name: "📦 ROM"
+      value: "ROM"
+    - name: "📊 SPL"
+      value: "SPL"
+    - name: "📋 WFM"
+      value: "WFM"
+    - name: "🚐 SIGITM"
+      value: "SIGITM"
+    - name: "🚐 SIGSEUM"
+      value: "SIGSEUM"
+    - name: "💳 SMARTBILL"
+      value: "SMARTBILL"
+    - name: "🚀 HYPER"
+      value: "HYPER"
+    - name: "💪 OSS"
+      value: "OSS"
+    - name: "🧷 HUBPAG"
+      value: "HUBPAG"
+    - name: "🧪 MVE"
+      value: "MVE"
+    - name: "🧫 ROUTER"
+      value: "ROUTER"
+    - name: "📊 ODP"
+      value: "ODP"
+    - name: "🧾 FRM"
+      value: "FRM"
+    - name: "✍️ CLICKSIGN"
+      value: "CLICKSIGN"
+    - name: "🏦 KENAN"
+      value: "KENAN"
+    - name: "🗒️ GDOC"
+      value: "GDOC"
+    - name: "🛡️ VPD"
+      value: "VPD"
+    - name: "🤝 PARCEIROS"
+      value: "PARCEIROS"
+    - name: "🧱 CSS"
+      value: "CSS"
+    - name: "💼 APP/ECOMM"
+      value: "APP/ECOMM"
+    - name: "🪠 PCO"
+      value: "PCO"
+    - name: "🤖 VICKY"
+      value: "VICKY"
+  optional: false
+  sensitive: false
+
+# ─────────────────────────────────────────────────────────────
+# 🌐 JWKS Configuration
+# ─────────────────────────────────────────────────────────────
+- propertyName: urlsCsv
+  name: JWKS URLs (CSV)
+  description: |
+    🌐 **Comma-separated JWKS endpoints tested sequentially.**
+    Example: `https://auth1.example.com/jwks,https://backup.example.com/jwks`
+  type: string
+  optional: false
+
+- propertyName: timeoutMillis
+  name: Timeout (ms)
+  description: ⏱️ **Timeout in milliseconds for each JWKS request.**
+  type: number
+  optional: true
+  defaultValue: 50000
+
+# ─────────────────────────────────────────────────────────────
+# 🔑 Header Claims Validation
+# ─────────────────────────────────────────────────────────────
+- propertyName: alg
+  name: Header • alg
+  description: |
+    🔐 **Expected JWT algorithm (alg claim).** CSV supported.
+    Example: `RS256,RS512`
+  type: string
+  optional: true
+
+- propertyName: kid
+  name: Header • kid
+  description: |
+    🔑 **Key ID from JWKS.** CSV supported.
+    Example: `key1,key2`
+  type: string
+  optional: true
+
+- propertyName: typ
+  name: Header • typ
+  description: |
+    🏷️ **JWT token type.** CSV supported.
+    Example: `JWT,JWS`
+  type: string
+  optional: true
+
+- propertyName: x5t
+  name: Header • x5t
+  description: |
+    🔍 **X.509 certificate thumbprint (x5t).** CSV supported.
+    Example: `MzYwXFzLObCcjKsRxEmSjIA3_VU`
+  type: string
+  optional: true
+
+# ─────────────────────────────────────────────────────────────
+# 📄 Critical Payload Claims Validation
+# ─────────────────────────────────────────────────────────────
+- propertyName: iss
+  name: Payload • iss
+  description: |
+    🌐 **Issuer of the JWT.** CSV supported.
+    Example: `https://issuer.example.com,https://backup-issuer.example.com`
+  type: string
+  optional: true
+
+- propertyName: oracleOauthRtTtc
+  name: Payload • Oracle OAuth RT TTC
+  description: |
+    🔍 Expected value(s) for the `oracle.oauth.rt.ttc` claim.
+    Provide one or more comma-separated values. If the token’s `oracle.oauth.rt.ttc` claim
+    does not match any, validation fails when `validateCustomClaims` is true.
+  type: string
+  optional: true
+
+- propertyName: sub
+  name: Payload • sub
+  description: |
+    👤 **Subject claim.** CSV supported.
+    Example: `userA,userB`
+  type: string
+  optional: true
+
+- propertyName: oracle.oauth.scope
+  name: Payload • oracle.oauth.scope
+  description: |
+    🔖 **OAuth scopes associated.** CSV supported.
+    Example: `ServiceAccount.Profile,UserAccount.Profile`
+  type: string
+  optional: true
+
+# ─────────────────────────────────────────────────────────────
+# 🏢 Business Payload Claims
+# ─────────────────────────────────────────────────────────────
+- propertyName: vivo.env
+  name: Payload • vivo.env
+  description: |
+    🏷️ **Environment identifier.** CSV supported.
+    Example: `CORP-HML,CORP-DEV`
+  type: string
+  optional: true
+
+- propertyName: vivo.endpoint
+  name: Payload • vivo.endpoint
+  description: |
+    📍 **API endpoint identifier.** CSV supported.
+    Example: `vivooauthservice,vivoapiservice`
+  type: string
+  optional: true
+
+- propertyName: oracle.oauth.user_origin_id
+  name: Payload • oracle.oauth.user_origin_id
+  description: |
+    🔖 **User origin ID.** CSV supported.
+    Example: `svc_apigwint_redes`
+  type: string
+  optional: true
+  
+- propertyName: aud
+  name: Payload • aud
+  description: |
+    🎯 **Audience claim (aud).** CSV supported.
+    Example: `VivoCustomerProfile,Customer,https://authhml.vivo.com.br:443/oauth2`
+  type: string
+  optional: true
+
+- propertyName: oracle.oauth.user_origin_id_type
+  name: Payload • oracle.oauth.user_origin_id_type
+  description: |
+    🔖 **User origin ID type.** CSV supported.
+    Example: `LDAP_UID,USER_ID`
+  type: string
+  optional: true
+
+- propertyName: oracle.oauth.svc_p_n
+  name: Payload • oracle.oauth.svc_p_n
+  description: |
+    🛠️ **Service profile name.** CSV supported.
+    Example: `VivoServiceProfile,AdminServiceProfile`
+  type: string
+  optional: true
+
+- propertyName: oracle.oauth.tk_context
+  name: Payload • oracle.oauth.tk_context
+  description: |
+    📌 **Token context.** CSV supported.
+    Example: `resource_access_tk,login_access_tk`
+  type: string
+  optional: true
+
+- propertyName: oracle.oauth.client_origin_id
+  name: Payload • oracle.oauth.client_origin_id
+  description: |
+    🆔 **Client origin ID.** CSV supported.
+    Example: `5728d15b019e473fb3b81354bb793c9d,123456789abcdef`
+  type: string
+  optional: true
+
+# ─────────────────────────────────────────────────────────────
+# 🕒 Technical Payload Claims
+# ─────────────────────────────────────────────────────────────
+- propertyName: clientIdExpression
+  name: Payload • Client ID Expression
+  description: |
+    📛 Comma-separated list of JWT claim names used to extract the Client ID dynamically from the token payload.
+
+    🔎 This is used only if Client-ID validation is enabled and supports fallback across multiple keys.
+
+    ✅ Examples:
+      - `client_id`
+      - `client`
+      - `sub`
+      - `client_id,client` → will check `client_id`, and if not found, fallback to `client`.
+
+    📌 These values will be searched in the token payload by the `extract-client-id` operation,
+    and the first non-empty match will be used for validation.
+  type: string
+  optional: true
+
+- propertyName: client
+  name: Payload • client
+  description: |
+    🔑 **Client ID from token payload.** CSV supported.
+    Example: `43fc60f754f54b72b35db5a9902d80c1`
+  type: string
+  optional: true
+
+- propertyName: entryUUID
+  name: Payload • entryUUID
+  description: |
+    🔑 **Entry UUID for tracking.** CSV supported.
+    Example: `e49f1e6d-c9e9-4870-8005-d4c7f2826dcb`
+  type: string
+  optional: true
+
+- propertyName: firstname
+  name: Payload • firstname
+  description: |
+    👤 **First name of user.** CSV supported.
+    Example: `Alice,Bob`
+  type: string
+  optional: true
+
+- propertyName: lastname
+  name: Payload • lastname
+  description: |
+    👥 **Last name or email (if used as alias).** CSV supported.
+    Example: `user@example.com`
+  type: string
+  optional: true
+
+- propertyName: mail
+  name: Payload • mail
+  description: |
+    📧 **Email address of the user.** CSV supported.
+    Example: `user@example.com`
+  type: string
+  optional: true
+
+- propertyName: nrdocumento
+  name: Payload • nrdocumento
+  description: |
+    🚪 **User document number.** CSV supported.
+    Example: `84619246069`
+  type: string
+  optional: true
+
+- propertyName: documentocliente
+  name: Payload • documentocliente
+  description: |
+    📄 **Redundant document ID.** CSV supported.
+    Example: `84619246069`
+  type: string
+  optional: true
+
+- propertyName: uid
+  name: Payload • uid
+  description: |
+    📅 **LDAP Unique ID.** CSV supported.
+    Example: `84619246069B2B`
+  type: string
+  optional: true
+
+- propertyName: commonname
+  name: Payload • commonname
+  description: |
+    📍 **Common name identifier.** CSV supported.
+    Example: `84619246069B2B`
+  type: string
+  optional: true
+
+- propertyName: authorizedservices
+  name: Payload • authorizedservices
+  description: |
+    ⚖️ **Authorized service list.** CSV supported.
+    Example: `serviceA,serviceB`
+  type: string
+  optional: true
+
+- propertyName: tvdesignador
+  name: Payload • tvdesignador
+  description: |
+    🎡 **Vivo-specific field: tvdesignador.** CSV supported.
+    Example: `code1,code2`
+  type: string
+  optional: true
+
+- propertyName: tvdesignadorpreferido
+  name: Payload • tvdesignadorpreferido
+  description: |
+    🔹 **Preferred designator for TV.** CSV supported.
+    Example: `main,default`
+  type: string
+  optional: true
+
+- propertyName: description
+  name: Payload • description
+  description: |
+    🔖 **Optional description field.** CSV supported.
+    Example: `some info here`
+  type: string
+  optional: true
+
+- propertyName: iat
+  name: Payload • iat
+  description: |
+    🕓 **Issued-at time (epoch seconds).**
+    Example: `1747084595`
+  type: string
+  optional: true
+
+- propertyName: jti
+  name: Payload • jti
+  description: |
+    🆔 **JWT ID for replay protection.** CSV supported.
+    Example: `84e75068-d285-48b7-84d8-49f24b3c4158,abcd1234-5678-90ef-ghij-klmnopqrstuv`
+  type: string
+  optional: true
+
+- propertyName: oracle.oauth.id_d_id
+  name: Payload • oracle.oauth.id_d_id
+  description: |
+    🔖 **Identity domain ID.** CSV supported.
+    Example: `6344ad2b-18b2-458d-8762-aecdfc63be10`
+  type: string
+  optional: true
+  
+- propertyName: domain
+  name: Payload • domain
+  description: |
+    🌐 **Domain** field from JWT payload. CSV supported.
+    Example: `VivoCustomerDomain,VivoServiceDomain`
+  type: string
+  optional: true
+  
+- propertyName: vivoLKRS
+  name: Payload • vivoLKRS
+  description: |
+    🧬 **vivoLKRS** custom claim from JWT payload. CSV supported.
+    Example: `MC0xNzM5MjkyMDU3MDY2`
+  type: string
+  optional: true
+
+- propertyName: oracle.oauth.prn.id_type
+  name: Payload • oracle.oauth.prn.id_type
+  description: |
+    📇 **Principal ID type.** CSV supported.
+    Example: `LDAP_UID,USER_ID`
+  type: string
+  optional: true
+
+- propertyName: prn
+  name: Payload • prn
+  description: |
+    🧑‍💻 **Principal value.** CSV supported.
+    Example: `SVC_MULESOFT,SVC_USER`
+  type: string
+  optional: true
+
+- propertyName: user.tenant.name
+  name: Payload • user.tenant.name
+  description: |
+    🏢 **Tenant name.** CSV supported.
+    Example: `Vivo,Telefonica`
+  type: string
+  optional: true
+
+- propertyName: customClaimsKey
+  name: "🔑 Claims – key(s)"
+  description: |
+    🧩 **Claim names to validate** from the JWT.
+
+    👉 You can provide:
+    • A single claim  
+      `kid`
+
+    • Or multiple claim names, separated by commas  
+      `alg,kid,typ`
+
+    📌 Keys are matched **positionally** with the values from the next field  
+    (see "🧪 Claims – value(s)").
+
+    ➖ Leave this field empty to skip custom claim validation.
+  type: string
+  optional: true
+
+- propertyName: customClaimsValue
+  name: "🧪 Claims – value(s)"
+  description: |
+    🎯 **Expected values** for the claims listed above.
+
+    👉 You can enter:
+    • A single value  
+      `RS512`
+
+    • Or multiple values, comma-separated  
+      `RS512,orakey`
+
+    🧠 Matching rules:
+    • ✅ Position matters → `alg,kid` matches `RS512,orakey`  
+    • 🔁 If there are **more keys than values**, the **last value is reused**  
+    • 🔽 A comma inside a value means "**accept any of these**"  
+      Example: `admin,user` will pass if claim = `admin` **or** `user`
+
+    ➖ Leave this field empty to skip additional validations.
+  type: string
+  optional: true
+
+# ─────────────────────────────────────────────────────────────
+# 🚩 Runtime Flags
+# ─────────────────────────────────────────────────────────────
+- propertyName: enableLogging
+  name: Enable Extension Logging
+  description: |
+    📝 **Toggle detailed extension logs on or off.**  
+    When **true**, the extension will print comprehensive debug messages to the console, including:  
+    • JWKS fetch attempts and results  
+    • JWT signature and claim validation steps  
+    • Client-ID extraction details  
+    • Any unexpected errors  
+    🔍 **Examples:**  
+    - `true` → you’ll see all “[JWT-Fallback] …” log lines during execution  
+    - `false` (default) → only errors or higher-level policy logs will appear  
+    💡 **Use case:**  
+    - Enable in development or troubleshooting  
+    - Disable in production to reduce noise and improve performance  
+  type: boolean
+  optional: true
+  defaultValue: false
+
+- propertyName: requireExpiration
+  name: Require Expiration (exp)
+  description: 🕒 **Enforce JWT expiration claim (exp).**
+  type: boolean
+  optional: true
+  defaultValue: true
+
+- propertyName: requireNotBefore
+  name: Require Not-Before (nbf)
+  description: 🚦 **Validate not-before claim (nbf).**
+  type: boolean
+  optional: true
+  defaultValue: false
+
+- propertyName: requireJWTId
+  name: Require JWT ID (jti)
+  description: 🛡️ **Enforce JWT ID claim (jti).**
+  type: boolean
+  optional: true
+  defaultValue: false
+
+- propertyName: skipClientIdValidation
+  name: Skip Client-ID Validation
+  description: ⚠️ **Skip API Manager client ID enforcement.**
+  type: boolean
+  optional: true
+  defaultValue: true
+  
+- propertyName: validateCustomClaims
+  name: Validate Custom Claims
+  description: |
+    🔍 **Enables validation of custom claims in the JWT, in addition to standard fields (`exp`, `nbf`, `jti`).**
+
+    When set to `true`, this property activates a secondary validation layer that inspects user-defined claim entries from the `<custom-claims>` block or `customClaims` property.
+
+    ---
+    ✅ **Behavior:**
+    - Each entry in `customClaims` is treated as a required condition. The policy will iterate through each claim key-value pair and verify:
+      - The claim is present in the token payload.
+      - Its value matches the expected value(s) provided (single or comma-separated for multiple options).
+    - Value matching is **case-sensitive** and type-aware (`String`, `Number`, `Array`, etc.).
+    - If any expected claim is missing, or its value does not match, the token will be rejected with `401 Unauthorized`.
+
+    ---
+    ⚠️ **Important behavior when `true` and `customClaims` is empty:**
+    - If `validateCustomClaims = true` and the `customClaims` block is either:
+      - Empty (`<custom-claims></custom-claims>`)
+      - Not provided at all (`{}` or `[]`)
+    - Then **the validation will fail by default**. This is intentional:
+      - The policy assumes custom claim validation was required but misconfigured.
+      - This protects against silent misconfigurations that would otherwise allow tokens with insufficient claims.
+
+    In this case, the following error will be returned:
+    ```
+    JWT validation failed: custom claim set was expected but not provided.
+    ```
+
+    ---
+    🚫 **If `validateCustomClaims = false`:**
+    - The `customClaims` block will be completely ignored.
+    - Only standard JWT validation applies (`exp`, `nbf`, `jti` depending on other flags).
+    - This setting is useful when the gateway is only responsible for cryptographic validation and expiration checks, while business logic is handled downstream.
+
+    ---
+    📌 **Usage examples:**
+    ```xml
+    <jwt-fallback:custom-claims>
+      <jwt-fallback:custom-claim key="aud" value="MyClientId"/>
+      <jwt-fallback:custom-claim key="scope" value="read,write"/>
+      <jwt-fallback:custom-claim key="iss" value="https://idp1.com,https://idp2.com"/>
+    </jwt-fallback:custom-claims>
+    ```
+
+    ---
+    🧠 **Best practices:**
+    - Always provide a valid set of claims when `validateCustomClaims` is `true`.
+    - Use for enforcing identity boundaries, tenant isolation, RBAC-like behavior, or per-client validations.
+    - When working with multiple IdPs, customize claims according to the expected JWT format per IdP.
+
+  type: boolean
+  optional: true
+  defaultValue: true
